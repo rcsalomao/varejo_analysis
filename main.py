@@ -1,6 +1,14 @@
 import pandas as pd
 import numpy as np
 
+ESTADO_CIVIL_MAP = {
+    1: "CASADO",
+    2: "DIVORCIADO",
+    3: "SEPARADO",
+    4: "SOLTEIRO",
+    5: "VIUVO",
+}
+
 
 def print_nulos_por_col(df):
     print("Nulos por coluna:")
@@ -9,12 +17,13 @@ def print_nulos_por_col(df):
     for col in df.columns:
         if nulos[col] > 0:
             print(f"  {col}: {nulos[col]} ({pct[col]}%)")
+    print()
 
 
 def get_dataframes(filename):
     # Carregando os dados
     print(">>> Leitura de Dados")
-    df = pd.read_csv(filename, sep=";")
+    df = pd.read_csv(filename, sep=";", encoding="utf-8-sig")
     print("-> Leitura de dados completada com sucesso")
 
     def relatorio_qualidade(df, nome):
@@ -25,7 +34,6 @@ def get_dataframes(filename):
         print()
         print_nulos_por_col(df)
         n_duplicatas = df.duplicated().sum()
-        print()
         print(f"Duplicatas: {n_duplicatas} ({n_duplicatas / len(df) * 100:.2f}%)")
         print()
         print("Tipos das colunas:")
@@ -51,9 +59,27 @@ df.drop(columns=df.columns[[10, 11, 12, 13]], inplace=True)
 df.drop_duplicates(keep="first", inplace=True)
 print("Após remoção dos dados duplicados:")
 print(f"  Linhas: {df.shape[0]} | Colunas: {df.shape[1]}")
+print()
 
 
 # Substituição de valores string "NULL", "N/A" e "" pelo valor 'None':
 df.replace({v: None for v in ["NULL", "N/A", ""]}, inplace=True)
-print("\nApós a substituição de valores string nulos")
+print("Após a substituição de valores string nulos")
 print_nulos_por_col(df)
+
+
+# Padronização do nome dos produtos, com a remoção de espaços extras e capitalização
+df["PR_NOME"] = df["PR_NOME"].str.strip().str.upper()
+
+
+# Conversão do tipo dos valores no campo 'DATA' para datetime
+df["DATA"] = pd.to_datetime(df["DATA"], dayfirst=True, errors="coerce")
+print("Após a conversão dos valores no campo 'DATA'")
+print("Tipos das colunas:")
+print(df.dtypes)
+print_nulos_por_col(df)
+
+
+# Substituição dos valores inteiros do campo 'CL_EC' para correspondente
+# em string, segundo o mapeamento dado em 'ESTADO_CIVIL_MAP'
+df["CL_EC"] = df["CL_EC"].map(lambda x: ESTADO_CIVIL_MAP[x])
