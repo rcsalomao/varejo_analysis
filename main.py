@@ -83,3 +83,9 @@ print_nulos_por_col(df)
 # Substituição dos valores inteiros do campo 'CL_EC' para correspondente
 # em string, segundo o mapeamento dado em 'ESTADO_CIVIL_MAP'
 df["CL_EC"] = df["CL_EC"].map(lambda x: ESTADO_CIVIL_MAP[x])
+
+
+# Estatísticas para os valores de 'CL_FHL'
+print("Estatísticas descritivas para o de número de filhos dos clientes:")
+print(df["CL_FHL"].describe())
+print(f"moda: {df['CL_FHL'].mode().values[0]}\n")
