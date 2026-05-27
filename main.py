@@ -1,0 +1,39 @@
+import pandas as pd
+import numpy as np
+
+
+def print_nulos_por_col(df):
+    print("Nulos por coluna:")
+    nulos = df.isnull().sum()
+    pct = (nulos / len(df) * 100).round(1)
+    for col in df.columns:
+        if nulos[col] > 0:
+            print(f"  {col}: {nulos[col]} ({pct[col]}%)")
+
+
+def get_dataframes(filename):
+    # Carregando os dados
+    print(">>> Leitura de Dados")
+    df = pd.read_csv(filename, sep=";")
+    print("-> Leitura de dados completada com sucesso")
+
+    def relatorio_qualidade(df, nome):
+        print(f"\n{'=' * 50}")
+        print(f"RELATÓRIO: {nome}".center(50))
+        print(f"{'=' * 50}")
+        print(f"Linhas: {df.shape[0]} | Colunas: {df.shape[1]}")
+        print()
+        print_nulos_por_col(df)
+        n_duplicatas = df.duplicated().sum()
+        print()
+        print(f"Duplicatas: {n_duplicatas} ({n_duplicatas / len(df) * 100:.2f}%)")
+        print()
+        print("Tipos das colunas:")
+        print(df.dtypes)
+
+    relatorio_qualidade(df, "Base Varejo")
+    print()
+    return df
+
+
+df = get_dataframes("./data/Base Varejo.csv")
