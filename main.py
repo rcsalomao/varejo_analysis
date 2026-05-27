@@ -51,3 +51,9 @@ df.drop(columns=df.columns[[10, 11, 12, 13]], inplace=True)
 df.drop_duplicates(keep="first", inplace=True)
 print("Após remoção dos dados duplicados:")
 print(f"  Linhas: {df.shape[0]} | Colunas: {df.shape[1]}")
+
+
+# Substituição de valores string "NULL", "N/A" e "" pelo valor 'None':
+df.replace({v: None for v in ["NULL", "N/A", ""]}, inplace=True)
+print("\nApós a substituição de valores string nulos")
+print_nulos_por_col(df)
