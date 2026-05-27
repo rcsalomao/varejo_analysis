@@ -44,3 +44,10 @@ df = get_dataframes("./data/Base Varejo.csv")
 # No caso, seriam as colunas de índice 10, 11, 12 e 13.
 # Deve-se proceder então para a remoção destas mesmas colunas:
 df.drop(columns=df.columns[[10, 11, 12, 13]], inplace=True)
+
+
+# Foram identificadas aprox. 11,63% de linhas duplicadas no dataset.
+# Procede-se, portanto, para a remoção das mesmas:
+df.drop_duplicates(keep="first", inplace=True)
+print("Após remoção dos dados duplicados:")
+print(f"  Linhas: {df.shape[0]} | Colunas: {df.shape[1]}")
