@@ -37,3 +37,10 @@ def get_dataframes(filename):
 
 
 df = get_dataframes("./data/Base Varejo.csv")
+
+
+# Percebe-se que pelo relatório de ingestão
+# o dataset possui colunas completamente vazias.
+# No caso, seriam as colunas de índice 10, 11, 12 e 13.
+# Deve-se proceder então para a remoção destas mesmas colunas:
+df.drop(columns=df.columns[[10, 11, 12, 13]], inplace=True)
