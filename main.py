@@ -63,7 +63,7 @@ print()
 
 
 # Substituição de valores string "NULL", "N/A" e "" pelo valor 'None':
-df.replace({v: None for v in ["NULL", "N/A", ""]}, inplace=True)
+df.replace({v: None for v in ["NULL", "N/A", "", "#N/D"]}, inplace=True)
 print("Após a substituição de valores string nulos")
 print_nulos_por_col(df)
 
@@ -89,3 +89,18 @@ df["CL_EC"] = df["CL_EC"].map(lambda x: ESTADO_CIVIL_MAP[x])
 print("Estatísticas descritivas para o de número de filhos dos clientes:")
 print(df["CL_FHL"].describe())
 print(f"moda: {df['CL_FHL'].mode().values[0]}\n")
+
+
+# Exploração de padrões por agrupamento
+print("Valores proporcionais de produtos comprados por gênero:")
+print(df.groupby(by="CL_GENERO")["PR_CAT"].value_counts(normalize=True) * 100)
+# É possível perceber que, proporcionalmente, o perfil de compra
+# em função do gênero do cliente se mantém inalterado.
+print("Distinção de gênero dos clientes com a respectiva quantidade de filhos:")
+print(df.groupby(by="CL_FHL")["CL_GENERO"].value_counts(normalize=True) * 100)
+# Percebe-se neste caso que, de forma geral (casos de 0, 1, 2 e 3 filhos),
+# as clientes do sexo feminino são mais predominantes.
+# Entretanto há uma inversão significativa para o caso específico de um casal
+# com 4 filhos, cujo há uma presença mais exarcebada de clientes masculinos.
+# Poderia-se presumir que nestes casos é a esposa a responsável por cuidar
+# das crianças enquanto o esposo realiza as compras.
