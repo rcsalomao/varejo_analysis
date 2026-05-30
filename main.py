@@ -3,6 +3,7 @@ import numpy as np
 import os
 from subprocess import run
 from shutil import which
+from collections import Counter
 
 
 ESTADO_CIVIL_MAP = {
@@ -125,11 +126,13 @@ print(df["CL_FHL"].describe())
 print(f"moda: {df['CL_FHL'].mode().values[0]}\n")
 
 
-# Exploração de padrões por agrupamento
+print(">>> Exploração de padrões por agrupamento:")
+
 print("Valores proporcionais de produtos comprados por gênero:")
 print(df.groupby(by="CL_GENERO")["PR_CAT"].value_counts(normalize=True) * 100)
 # É possível perceber que, proporcionalmente, o perfil de compra
 # em função do gênero do cliente se mantém inalterado.
+
 print("Distinção de gênero dos clientes com a respectiva quantidade de filhos:")
 print(df.groupby(by="CL_FHL")["CL_GENERO"].value_counts(normalize=True) * 100)
 # Percebe-se neste caso que, de forma geral (casos de 0, 1, 2 e 3 filhos),
@@ -141,19 +144,76 @@ print(df.groupby(by="CL_FHL")["CL_GENERO"].value_counts(normalize=True) * 100)
 print()
 
 
-# Um resumo de quantidades proporcionais de produtos vendidos dentre algumas categorias
+print(">>> Insights alcançados:")
+
 print("Proporção de compras por gênero:")
 print(df["CL_GENERO"].value_counts(normalize=True) * 100)
+# Percebe-se que há uma maior presença de clientes
+# do gênero feminino neste dataset.
+
 print("Número de vendas por categoria:")
 print(df["PR_CAT"].value_counts(normalize=True) * 100)
-print("Número de vendas por mês ao longo do período:")
-print(
-    df["DATA"]
-    .dt.month.value_counts(sort=False, normalize=True)
+# Por meio desta tabela, pode-se notar que os
+# produtos da categoria de ALIMENTOS são os
+# mais vendidos, contribuindo com mais de 52% das
+# vendas. Já os produtos da categoria ACESSORIOS são
+# os produtos que a menor representação com menos de
+# 2% de representação.
+
+print("Número total de vendas por ano e diferença percentual:")
+df_2019 = df.loc[df["DATA"].dt.year == 2019, :]
+df_2020 = df.loc[df["DATA"].dt.year == 2020, :]
+n_vendas_2019 = (
+    df_2019["DATA"]
+    .dt.month.value_counts(sort=False, normalize=False)
     .to_frame()
     .sort_values(by="DATA")
-    * 100
 )
+n_vendas_2020 = (
+    df_2020["DATA"]
+    .dt.month.value_counts(sort=False, normalize=False)
+    .to_frame()
+    .sort_values(by="DATA")
+)
+print(f"Total de vendas em 2019: {n_vendas_2019['count'].sum()}")
+print(f"Total de vendas em 2020: {n_vendas_2020['count'].sum()}")
+print(
+    f"Diferença percentual: {((n_vendas_2020.sum() - n_vendas_2019.sum()) / n_vendas_2019.sum() * 100).values[0]}"
+)
+# Nota-se que houve um aumento de quase 10% no volume de vendas
+# entre os anos de 2019 e 2020.
+
+print("Número de vendas por mês durante os dois anos:")
+print("  Ano de 2019:")
+print("  Quantidade de vendas por mês:")
+print(n_vendas_2019["count"])
+print(n_vendas_2019.describe())
+dias_unicos = df_2019["DATA"].unique()
+dias_por_mes = pd.DataFrame.from_dict(
+    Counter([d.month for d in dias_unicos]), orient="index", columns=["quantidade"]
+)
+print("  Quantidade de vendas por mês normalizada pela quantidade de dias:")
+vendas_por_dia_mes = n_vendas_2019["count"] / dias_por_mes["quantidade"]
+print(vendas_por_dia_mes)
+print("  Ano de 2020:")
+print("  Quantidade de vendas por mês:")
+print(n_vendas_2020["count"])
+print(n_vendas_2020.describe())
+dias_unicos = df_2020["DATA"].unique()
+dias_por_mes = pd.DataFrame.from_dict(
+    Counter([d.month for d in dias_unicos]), orient="index", columns=["quantidade"]
+)
+print("  Quantidade de vendas por mês normalizada pela quantidade de dias:")
+vendas_por_dia_mes = n_vendas_2020["count"] / dias_por_mes["quantidade"]
+print(vendas_por_dia_mes)
+# Do ano de 2019 para 2020, o número de vendas médio aumentou quase 10%
+# com a redução do respectivo desvio padrão em 35%, demonstrando que
+# a amplitude dos valores mensais se tornou menor enquanto os valores
+# mensais resultaram maiores.
+# Ao se analisar as vendas mensais normalizadas pelo número de dias,
+# percebe-se que não há a presença de um claro padrão a longo dos
+# anos e entre os anos.
+
 # print(
 #     df["PR_CAT"].unique()
 # )  # ['BEBIDAS' 'HIGIENE' 'ALIMENTOS' 'LIMPEZA' 'ACESSORIOS' 'PET' None]
