@@ -218,4 +218,5 @@ __marimo__/
 .streamlit/secrets.toml
 
 # dataset
-data/Base Varejo.csv
+data/input/Base Varejo.csv
+data/output/base_varejo_clean.csv

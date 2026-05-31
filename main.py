@@ -127,25 +127,21 @@ def insights(df):
     # produtos da categoria de ALIMENTOS são os
     # mais vendidos, contribuindo com mais de 52% das
     # vendas. Já os produtos da categoria ACESSORIOS são
-    # os produtos que a menor representação com menos de
-    # 2% de representação.
+    # os produtos que possuem a menor representação,
+    # com menos de 2%.
     print()
 
     print("-> Número total de vendas por ano e diferença percentual")
     df_2019 = df.loc[df["DATA"].dt.year == 2019, :]
     df_2020 = df.loc[df["DATA"].dt.year == 2020, :]
-    n_vendas_2019 = (
-        df_2019["DATA"]
+    calc_n_vendas = lambda df: (  # noqa: E731,F841
+        df["DATA"]
         .dt.month.value_counts(sort=False, normalize=False)
         .to_frame()
         .sort_values(by="DATA")
     )
-    n_vendas_2020 = (
-        df_2020["DATA"]
-        .dt.month.value_counts(sort=False, normalize=False)
-        .to_frame()
-        .sort_values(by="DATA")
-    )
+    n_vendas_2019 = calc_n_vendas(df_2019)
+    n_vendas_2020 = calc_n_vendas(df_2020)
     print(f"Total de vendas em 2019: {n_vendas_2019['count'].sum()}")
     print(f"Total de vendas em 2020: {n_vendas_2020['count'].sum()}")
     print(
@@ -187,13 +183,11 @@ def insights(df):
     # mensais resultaram maiores.
     # Ao se analisar as vendas mensais normalizadas pelo número de dias,
     # percebe-se que não há a presença de um claro padrão a longo dos
-    # anos e entre os anos.
+    # anos e/ou entre os anos.
     print()
 
-    # print(
-    #     df["PR_CAT"].unique()
-    # )  # ['BEBIDAS' 'HIGIENE' 'ALIMENTOS' 'LIMPEZA' 'ACESSORIOS' 'PET' None]
     print("-> Número de vendas por categoria de produtos")
+    # As seguintes tabelas demonstram quais são as vendas proporcionais dos diversos produtos encontrados no dataset, ordenados em forma decrescente.
     print("Produtos de HIGIENE:")
     print(df.query("PR_CAT == 'HIGIENE'")["PR_NOME"].value_counts(normalize=True) * 100)
     print()
@@ -207,6 +201,12 @@ def insights(df):
     print()
     print("Produtos para PET:")
     print(df.query("PR_CAT == 'PET'")["PR_NOME"].value_counts(normalize=True) * 100)
+    # Desta maneira, pode-se ter uma melhor idéia sobre quais produtos possuem maiores e menores demandas nas suas respectivas categorias.
+    # No caso dos produtos de higiene, é possível perceber que todos eles possuem valores muito próximos de vendas, com a única excessão do produto absorvente, que possui um valor significativamente menor.
+    # Já para os produtos da categoria de alimentos, é possível separar os produtos em 3 grupos de acordo com seus números de vendas.
+    # O produto mais consumido é o presunto cozido, enquanto os produtos com menor saída são o achocolatado, abacaxi, abacate e alho.
+    # Para os produtos de limpeza, apenas a água sanitária e o álcool registraram valores de vendas significantemente menores do restante.
+    # Por fim, para os produtos da categoria pet, apenas o alimento para pássaro possui valor muito inferior aos outros tipos de ração.
     print()
 
 
@@ -245,3 +245,17 @@ estat_descr(df)
 explor_agrup(df)
 
 insights(df)
+
+
+def write_df(df: pd.DataFrame):
+    # Escrita do dataset limpo
+    df.to_csv("./data/output/base_varejo_clean.csv", sep=",", encoding="utf-8")
+    if which("zip"):
+        run(
+            'zip -j "./data/output/base_varejo_clean.csv.zip" "./data/output/base_varejo_clean.csv"',
+            shell=True,
+            check=True,
+        )
+
+
+# write_df(df)
