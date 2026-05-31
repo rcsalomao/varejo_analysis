@@ -317,7 +317,7 @@ dtype: float64
 É possível perceber que do ano de 2019 para 2020, o número de vendas médio aumentou quase 10% com a redução do respectivo desvio padrão em 35%, demonstrando que a amplitude dos valores mensais se tornou menor enquanto os valores mensais resultaram maiores.
 Ao se analisar as vendas mensais normalizadas pelo número de dias, percebe-se que não há a presença de um claro padrão a longo dos anos e/ou entre os anos.
 
-### foo
+### Número de vendas por categoria de produtos
 
 Por fim, é de interesse também entender qual a distribuição de vendas dos produtos por suas respectivas categorias.
 As seguintes tabelas demonstram quais são as vendas proporcionais dos diversos produtos encontrados no dataset, ordenados em forma decrescente.
